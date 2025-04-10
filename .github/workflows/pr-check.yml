@@ -5,8 +5,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-test-sonar:
-    name: Build, Test and SonarQube
+  compile:
+    name: Compile Project
     runs-on: ubuntu-latest
 
     steps:
@@ -19,17 +19,51 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Compile project
+      - name: Compile with Maven
         run: mvn clean compile
 
-      - name: Run unit tests
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    needs: compile
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run tests
         run: mvn test
 
-      - name: Verify project
-        run: mvn verify
+  sonar:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: test
 
-      - name: Run SonarCloud analysis
-        run: mvn sonar:sonar
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud Scan
+        run: mvn verify sonar:sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
