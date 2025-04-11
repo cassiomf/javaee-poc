@@ -27,9 +27,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: |
-          pip install openai==1.13.3 requests
-          pip show openai  # opcional: exibe versão instalada
+        run: pip install --upgrade --force-reinstall -r .sap-ai-pr-review/requirements.txt
 
       - name: Run AI Review
         run: python .sap-ai-pr-review/review.py
