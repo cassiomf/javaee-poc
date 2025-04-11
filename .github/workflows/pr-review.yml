@@ -27,12 +27,14 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r .sap-ai-pr-review/requirements.txt
+        run: |
+          pip install openai==1.13.3 requests
+          pip show openai  # opcional: exibe versão instalada
 
       - name: Run AI Review
         run: python .sap-ai-pr-review/review.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
-          AZURE_OPENAI_ENDPOINT: "https://cassi-m9rckuyt-eastus2.cognitiveservices.azure.com/"
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
           AZURE_OPENAI_DEPLOYMENT: "gpt-35-turbo"
