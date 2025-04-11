@@ -1,0 +1,38 @@
+name: PR Review by Azure OpenAI
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v3
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+          echo "PR_DIFF<<EOF" >> $GITHUB_ENV
+          gh pr diff ${{ github.event.pull_request.number }} >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r .sap-ai-pr-review/requirements.txt
+
+      - name: Run AI Review
+        run: python .sap-ai-pr-review/review.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_ENDPOINT: "https://cassi-m9rckuyt-eastus2.cognitiveservices.azure.com/"
+          AZURE_OPENAI_DEPLOYMENT: "gpt-35-turbo"
