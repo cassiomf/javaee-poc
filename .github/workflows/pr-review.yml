@@ -28,7 +28,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install openai
+        run: pip install -r .sap-ai-pr-review/requirements.txt
 
       - name: Run AI Review
         env:
