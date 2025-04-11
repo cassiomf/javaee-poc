@@ -2,11 +2,11 @@ name: Pull Request Checks
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
-  build-test-sonar:
-    name: Build, Test and SonarQube
+  compile:
+    name: Compile Project
     runs-on: ubuntu-latest
 
     steps:
@@ -19,13 +19,50 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Build with Maven
+      - name: Compile with Maven
         run: mvn clean compile
 
-      - name: Run unit tests
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    needs: compile
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run tests
         run: mvn test
 
-      - name: SonarQube Scan
+  sonar:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud Scan
         run: mvn verify sonar:sonar
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
