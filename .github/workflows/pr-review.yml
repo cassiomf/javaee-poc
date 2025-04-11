@@ -1,7 +1,8 @@
-name: ai-review
+name: PR Review by Azure OpenAI
 
 on:
   pull_request:
+    types: [opened, edited, synchronize]
 
 permissions:
   contents: read
@@ -10,7 +11,6 @@ permissions:
 jobs:
   ai-review:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout PR
         uses: actions/checkout@v3
@@ -18,22 +18,25 @@ jobs:
       - name: Get PR diff
         id: diff
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          git diff origin/${{ github.base_ref }} > pr.diff
-          cat pr.diff
+          echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+          echo "PR_DIFF<<EOF" >> $GITHUB_ENV
+          gh pr diff ${{ github.event.pull_request.number }} >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r .sap-ai-pr-review/requirements.txt
+        run: pip install --upgrade --force-reinstall -r .sap-ai-pr-review/requirements.txt
 
       - name: Run AI Review
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: python .sap-ai-pr-review/review.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_DEPLOYMENT: "gpt-35-turbo"
