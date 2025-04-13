@@ -76,10 +76,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Check test coverage on diff
-        uses: daversa/jacoco-diff@v1
         with:
-          jacoco-file: target/site/jacoco/jacoco.xml
-          minimum-coverage: 70
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install diff-cover
+        run: pip install diff-cover
+
+      - name: Check coverage on diff
+        run: |
+          diff-cover target/site/jacoco/jacoco.xml \
+            --compare-branch=origin/main \
+            --fail-under=70
