@@ -37,8 +37,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Run tests
-        run: mvn test
+      - name: Run tests with coverage
+        run: mvn verify
 
   sonar:
     name: SonarCloud Analysis
@@ -67,3 +67,19 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+
+  coverage:
+    name: Check PR Coverage
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check test coverage on diff
+        uses: daversa/jacoco-diff@v1
+        with:
+          jacoco-file: target/site/jacoco/jacoco.xml
+          minimum-coverage: 70
+          github-token: ${{ secrets.GITHUB_TOKEN }}
