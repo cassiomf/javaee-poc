@@ -40,6 +40,18 @@ jobs:
       - name: Run tests with coverage
         run: mvn verify
 
+      - name: Upload JaCoCo coverage report (XML)
+        uses: actions/upload-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
+
+      - name: Upload JaCoCo HTML report (visual)
+        uses: actions/upload-artifact@v3
+        with:
+          name: full-jacoco-html-report
+          path: target/site/jacoco/index.html
+
   sonar:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
@@ -74,6 +86,12 @@ jobs:
     needs: test
 
     steps:
+      - name: Download JaCoCo coverage report
+        uses: actions/download-artifact@v3
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:
