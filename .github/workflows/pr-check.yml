@@ -53,10 +53,11 @@ jobs:
             exit 1
           fi
 
-      - name: Save coverage to workspace
-        run: |
-          mkdir -p ${{ github.workspace }}/coverage
-          cp target/site/jacoco/jacoco.xml ${{ github.workspace }}/coverage/
+      - name: Upload jacoco.xml as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-xml
+          path: target/site/jacoco/jacoco.xml
 
   sonar:
     name: SonarCloud Analysis
@@ -92,6 +93,12 @@ jobs:
     needs: test
 
     steps:
+      - name: Download jacoco.xml
+        uses: actions/download-artifact@v4
+        with:
+          name: jacoco-xml
+          path: coverage
+
       - name: Checkout code
         uses: actions/checkout@v3
         with:
