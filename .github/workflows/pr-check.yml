@@ -67,3 +67,29 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
+
+  diff-coverage:
+    name: Diff Coverage Check
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install diff-cover
+        run: pip install diff-cover
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Run diff-coverage script
+        run: ./scripts/check-diff-coverage.sh main
