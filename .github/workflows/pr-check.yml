@@ -43,18 +43,6 @@ jobs:
       - name: List JaCoCo files
         run: ls -lhR target/site/jacoco || echo "JaCoCo directory not found"
 
-      - name: Upload JaCoCo coverage report (XML)
-        uses: actions/upload-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco/jacoco.xml
-
-      - name: Upload JaCoCo HTML report (visual)
-        uses: actions/upload-artifact@v4
-        with:
-          name: full-jacoco-html-report
-          path: target/site/jacoco/
-
       - name: Check if jacoco.xml exists
         run: |
           if [ -f target/site/jacoco/jacoco.xml ]; then
@@ -62,7 +50,13 @@ jobs:
           else
             echo "❌ Jacoco report not found!"
             ls -la target/site/jacoco || echo "Folder doesn't exist"
+            exit 1
           fi
+
+      - name: Save coverage to workspace
+        run: |
+          mkdir -p ${{ github.workspace }}/coverage
+          cp target/site/jacoco/jacoco.xml ${{ github.workspace }}/coverage/
 
   sonar:
     name: SonarCloud Analysis
@@ -98,12 +92,6 @@ jobs:
     needs: test
 
     steps:
-      - name: Download JaCoCo coverage report
-        uses: actions/download-artifact@v4
-        with:
-          name: jacoco-report
-          path: target/site/jacoco
-
       - name: Checkout code
         uses: actions/checkout@v3
         with:
@@ -126,6 +114,6 @@ jobs:
       - name: Check coverage on diff
         run: |
           echo "Verifying coverage on PR diff..."
-          diff-cover target/site/jacoco/jacoco.xml \
+          diff-cover coverage/jacoco.xml \
             --compare-branch=origin/main \
             --fail-under=70
