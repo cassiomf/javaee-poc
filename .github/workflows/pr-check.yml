@@ -55,6 +55,15 @@ jobs:
           name: full-jacoco-html-report
           path: target/site/jacoco/
 
+      - name: Check if jacoco.xml exists
+        run: |
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "✅ Jacoco report found!"
+          else
+            echo "❌ Jacoco report not found!"
+            ls -la target/site/jacoco || echo "Folder doesn't exist"
+          fi
+
   sonar:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
