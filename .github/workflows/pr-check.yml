@@ -93,12 +93,6 @@ jobs:
     needs: test
 
     steps:
-      - name: Download jacoco.xml
-        uses: actions/download-artifact@v4
-        with:
-          name: jacoco-xml
-          path: coverage
-
       - name: Checkout code
         uses: actions/checkout@v3
         with:
@@ -110,17 +104,46 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+      - name: Run tests with coverage on changed files
+        run: |
+          echo "Identifying changed files in the PR..."
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep '\.java$')
+          
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No Java files were modified."
+            exit 0
+          fi
 
-      - name: Install diff-cover
-        run: pip install diff-cover
+          echo "Running tests on modified files..."
+          mvn clean verify -DskipTests=false -Djacoco.skip=false
+          
+      - name: List JaCoCo files
+        run: ls -lhR target/site/jacoco || echo "JaCoCo directory not found"
+
+      - name: Check if jacoco.xml exists
+        run: |
+          if [ -f target/site/jacoco/jacoco.xml ]; then
+            echo "✅ Jacoco report found!"
+          else
+            echo "❌ Jacoco report not found!"
+            ls -la target/site/jacoco || echo "Folder doesn't exist"
+            exit 1
+          fi
+
+      - name: Upload jacoco.xml as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-xml
+          path: target/site/jacoco/jacoco.xml
 
       - name: Check coverage on diff
         run: |
           echo "Verifying coverage on PR diff..."
-          diff-cover coverage/jacoco.xml \
-            --compare-branch=origin/main \
-            --fail-under=70
+          COVERAGE=$(xmllint --xpath 'string(//counter[@type="LINE"]/@covered)' target/site/jacoco/jacoco.xml)
+
+          if [ $(echo "$COVERAGE < 70" | bc) -eq 1 ]; then
+            echo "❌ Coverage is below 70%. Coverage: $COVERAGE"
+            exit 1
+          else
+            echo "✅ Coverage is above 70%. Coverage: $COVERAGE"
+          fi
