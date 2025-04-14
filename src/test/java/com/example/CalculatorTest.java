@@ -20,5 +20,23 @@ public class CalculatorTest {
         assertEquals(6, result);
     }
 
-    // multiply() and divide() are intentionally not tested
+    @Test
+    public void testMultiply() {
+        Calculator calculator = new Calculator();
+        int result = calculator.multiply(4, 5);
+        assertEquals(20, result);
+    }
+
+    @Test
+    public void testDivide() {
+        Calculator calculator = new Calculator();
+        int result = calculator.divide(10, 2);
+        assertEquals(5, result);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDivideByZero() {
+        Calculator calculator = new Calculator();
+        calculator.divide(10, 0);
+    }
 }
