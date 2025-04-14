@@ -86,5 +86,8 @@ jobs:
       - name: Install diff-cover
         run: pip install diff-cover
 
+      - name: Fetch all branches
+        run: git fetch --all
+
       - name: Run diff-coverage script
         run: ./scripts/check-diff-coverage.sh main
