@@ -1,5 +1,7 @@
 package com.example;
 
+import java.security.SecureRandom;
+
 public class Hello {
     public String greet(String name) {
         return "Hello, " + name;
@@ -7,8 +9,10 @@ public class Hello {
 
     public String greetWithRambomMessage(String name) {
         String[] messages = {"Hello", "Hi", "Greetings", "Salutations"};
-        int randomIndex = (int) (Math.random() * messages.length);
-        return messages[randomIndex] + ", " + name;
+        SecureRandom random = new SecureRandom();
+        byte bytes[] = new byte[20];
+        random.nextBytes(bytes);
+        return messages[random.nextInt()] + ", " + name;
     }
 
     public String farewell(String name) {
