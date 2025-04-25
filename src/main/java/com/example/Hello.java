@@ -13,7 +13,8 @@ public class Hello {
             "Greetings, " + name,
             "Welcome, " + name
         };
-        int randomIndex = (int) (Math.random() * messages.length);
+        java.util.Random random = new java.util.Random();
+        int randomIndex = random.nextInt(messages.length);
         return messages[randomIndex];
     }
 }
