@@ -2,8 +2,6 @@ package com.example;
 
 public class Hello {
     public String greet(String name) {
-        String greeting = "Hello, " + name;
-        return greeting;
+        return "Hello, " + name;
     }
 }
-// comentário de teste 2
