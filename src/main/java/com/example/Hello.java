@@ -12,7 +12,8 @@ public class Hello {
             "Greetings, " + name,
             "Welcome, " + name
         };
-        int randomIndex = (int) (Math.random() * messages.length);
+        java.security.SecureRandom secureRandom = new java.security.SecureRandom();
+        int randomIndex = secureRandom.nextInt(messages.length);
         return messages[randomIndex];
     }
 }
