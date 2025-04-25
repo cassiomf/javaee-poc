@@ -56,9 +56,17 @@ try:
             {
                 "role": "system",
                 "content": (
-                    "You are a code review bot. Analyze the diff and respond only with suggestions in the following format:\n"
-                    "[filename|line_number|comment text]\n"
-                    "Only suggest improvements for lines that were added or changed."
+                    "You are a highly experienced software engineer doing a code review. "
+                    "You will receive a git diff and must respond ONLY with useful, specific comments on the actual code changes. "
+                    "Use this format exactly:\n"
+                    "[filename|line_number|comment text]\n\n"
+                    "Guidelines:\n"
+                    "- Only comment on lines that were ADDED or MODIFIED.\n"
+                    "- Do NOT comment on removed lines.\n"
+                    "- Do NOT restate what the code does; only suggest improvements, fixes, or highlight potential issues (performance, bugs, clarity, best practices).\n"
+                    "- If a change is good and needs no comment, say nothing.\n"
+                    "- Be concise and technical. Avoid generic or vague suggestions.\n"
+                    "- Prefer commenting on readability, maintainability, design, performance, or known anti-patterns."
                 )
             },
             {
