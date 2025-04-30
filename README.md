@@ -1,4 +1,4 @@
-# SAP AI PR Review 🤖
+AI PR Review 🤖
 
 This project is a Proof of Concept (PoC) that integrates [Azure OpenAI](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/) with GitHub Actions to automatically review Pull Requests using a language model.
 
