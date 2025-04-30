@@ -14,10 +14,6 @@ public class Hello {
             return "Bonjour, " + name;
         } else if (language.equalsIgnoreCase("german")) {
             return "Hallo, " + name;
-        } else if (language.equalsIgnoreCase("italian")) {
-            return "Ciao, " + name;
-        } else if (language.equalsIgnoreCase("japanese")) {
-            return "こんにちは, " + name; // Konnichiwa
         } else {
             return greet(name);
         }
