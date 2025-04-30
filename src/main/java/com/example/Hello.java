@@ -9,7 +9,7 @@ public class Hello {
         if ("Spanish".equals(language)) {
             return "Hola, " + name;
         } else if ("French".equals(language)) {
-            return "Bonjour, " + name;
+            return "Bonjour, " + name; 
         } else if ("French".equals(language)) {
             return "Bonjour, " + name;
         } else if ("German".equals(language)) {
