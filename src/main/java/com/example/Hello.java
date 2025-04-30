@@ -1,21 +1,25 @@
 package com.example;
 
 public class Hello {
+    public enum Language {
+        SPANISH, FRENCH, GERMAN, DEFAULT
+    }
+
     public String greet(String name) {
         return "Hello, " + name;
     }
 
-    public String greetMultipleLanguages(String name, String language) {
-        if (language.equalsIgnoreCase("spanish")) {
-            return "Hola, " + name;
-        } else if (language.equalsIgnoreCase("french")) {
-            return "Bonjour, " + name;
-        } else if (language.equalsIgnoreCase("french")) {
-            return "Bonjour, " + name;
-        } else if (language.equalsIgnoreCase("german")) {
-            return "Hallo, " + name;
-        } else {
-            return greet(name);
+    public String greetMultipleLanguages(String name, Language language) {
+
+        switch (language) {
+            case SPANISH:
+                return "Hola, " + name;
+            case FRENCH:
+                return "Bonjour, " + name;
+            case GERMAN:
+                return "Hallo, " + name;
+            default:
+                return greet(name);
         }
     }
 }
