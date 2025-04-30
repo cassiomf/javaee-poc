@@ -6,15 +6,16 @@ public class Hello {
     }
 
     public String greetMultipleLanguages(String name, String language) {
-        switch (language.toLowerCase()) {
-            case "spanish":
-                return "Hola, " + name;
-            case "french":
-                return "Bonjour, " + name;
-            case "german":
-                return "Hallo, " + name;
-            default:
-                return greet(name);
+        if (language.equalsIgnoreCase("spanish")) {
+            return "Hola, " + name;
+        } else if (language.equalsIgnoreCase("french")) {
+            return "Bonjour, " + name;
+        } else if (language.equalsIgnoreCase("french")) {
+            return "Bonjour, " + name;
+        } else if (language.equalsIgnoreCase("german")) {
+            return "Hallo, " + name;
+        } else {
+            return greet(name);
         }
     }
 }
