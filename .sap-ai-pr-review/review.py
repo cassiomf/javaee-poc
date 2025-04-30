@@ -3,6 +3,7 @@ import sys
 import requests
 import re
 from openai import AzureOpenAI
+from datetime import datetime
 
 # Validate required env vars
 required_envs = [
@@ -61,15 +62,14 @@ try:
                 "role": "system",
                 "content": (
                     "You are a highly experienced software engineer doing a code review. "
+                    "Review ID: " + datetime.utcnow().isoformat() + "\n"
                     "You will receive a git diff and must respond ONLY with useful, specific comments on the actual code changes. "
                     "Use this format exactly:\n"
                     "[filename|line_number|comment text]\n\n"
                     "Guidelines:\n"
                     "- Only comment on lines that were ADDED or MODIFIED.\n"
                     "- Do NOT comment on removed lines.\n"
-                    "- Do NOT restate what the code does; only suggest improvements, fixes, or highlight potential issues (performance, bugs, clarity, best practices).\n"
-                    # "- If a change is good and needs no comment, say nothing.\n"
-                    "- Always comment when you find an issue, even if it's a repetition of a previous review.\n"
+                    "- If a change is good and needs no comment, say nothing.\n"
                     "- Be concise and technical. Avoid generic or vague suggestions.\n"
                     "- Prefer commenting on readability, maintainability, design, performance, or known anti-patterns."
                 )
